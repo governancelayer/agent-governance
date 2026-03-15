@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/agf-spec/agent-governance-framework/blob/main/spec/dae-schema-v0.2.json",
+  "title": "Delegated Authority Envelope v0.2",
+  "$comment": "DAE is a profile of GNAP (RFC 9635) with agent-governance extensions. Fields derived from GNAP vocabulary are annotated. AGF-specific extensions are marked with 'agf-extension'.",
+  "type": "object",
+  "required": [
+    "delegation_id",
+    "principal",
+    "delegate",
+    "allowed_actions",
+    "constraints",
+    "expiry",
+    "revocable",
+    "revoked",
+    "audit_required"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "delegation_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique identifier for this delegation. Maps to GNAP access token identifier; expressed as a portable pre-signed identifier rather than a server-issued token."
+    },
+    "principal": {
+      "type": "string",
+      "minLength": 1,
+      "description": "AGF extension (not in GNAP). Identity of the human or system delegating authority. Makes the delegation chain explicit and traceable."
+    },
+    "delegate": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identity of the agent receiving delegated authority. Maps to GNAP client identity."
+    },
+    "allowed_actions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Actions this delegation permits. Maps to GNAP 'access' rights array. Machine-enforceable: if the transaction action is not in this list, the result MUST be deny."
+    },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Transaction constraints. All fields are AGF extensions to GNAP.",
+      "properties": {
+        "max_value": {
+          "type": "number",
+          "description": "AGF extension (not in GNAP). Maximum transaction value in the transaction's currency unit. Machine-enforceable: if the transaction amount exceeds this, the result MUST be deny (ERR_DAE_MAX_VALUE_EXCEEDED). Required for autonomous commerce agents."
+        },
+        "jurisdiction": {
+          "type": "string",
+          "minLength": 1,
+          "description": "AGF extension. Jurisdictional constraint on where the delegated action may execute."
+        }
+      }
+    },
+    "expiry": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Absolute expiry timestamp (RFC3339, UTC). Derived from GNAP token expiry semantics. Expressed as an absolute timestamp (not TTL) for portable offline evaluation. If current time exceeds this value, the result MUST be deny (ERR_DAE_EXPIRED)."
+    },
+    "revocable": {
+      "type": "boolean",
+      "description": "Whether this delegation can be revoked before expiry. AGF extension to GNAP inline revocation state."
+    },
+    "revoked": {
+      "type": "boolean",
+      "description": "Current revocation state. AGF extension: carries revocation state inline for enforcement without a server round-trip. If true, the result MUST be deny (ERR_DAE_REVOKED). GNAP uses a server-side revocation API; DAE carries this state portably."
+    },
+    "audit_required": {
+      "type": "boolean",
+      "description": "AGF extension (not in GNAP). If true, the enforcement point MUST emit audit evidence for this delegation evaluation."
+    }
+  }
+}

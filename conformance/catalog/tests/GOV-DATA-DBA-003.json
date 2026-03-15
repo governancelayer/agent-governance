@@ -1,0 +1,39 @@
+{
+  "id": "GOV-DATA-DBA-003",
+  "title": "Compliant data transfer allows with evidence",
+  "primitive": "DBA",
+  "pillar": "data_boundaries",
+  "level": "L2",
+  "input": {
+    "boundary_assertion": {
+      "assertion_id": "dba-test-003",
+      "issuer": "OrgA.GovernanceService",
+      "subject_id": "req-3003",
+      "subject_type": "request",
+      "data_classes": ["confidential"],
+      "permitted_operations": ["infer", "audit_export"],
+      "boundary_constraints": {
+        "allowed_regions": ["EU"],
+        "max_retention_hours": 24,
+        "redaction_required": ["customer_email"],
+        "egress_allowed": true
+      },
+      "audit_required": true
+    },
+    "transaction": {
+      "transaction_id": "tx-dba-003",
+      "operation": "infer",
+      "region": "EU",
+      "requested_retention_hours": 4,
+      "cross_org_transfer": false,
+      "visible_fields": ["order_id"]
+    }
+  },
+  "expected": {
+    "decision": "allow",
+    "reason_code": "OK_DBA_ALLOWED",
+    "assertion_id": "dba-test-003",
+    "required_evidence_fields": ["transaction_id", "assertion_id", "decision", "reason_code", "timestamp", "evaluated_region", "evaluated_operation"],
+    "evidence_equals_result_fields": ["transaction_id", "assertion_id", "decision", "reason_code", "evaluated_region", "evaluated_operation"]
+  }
+}

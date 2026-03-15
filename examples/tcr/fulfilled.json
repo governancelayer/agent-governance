@@ -1,0 +1,29 @@
+{
+  "commitment_id": "tcr-001",
+  "transaction_id": "tx-2001",
+  "issuer": "OrgA.AgentA",
+  "counterparty": "OrgB.ServiceB",
+  "commitments": [
+    {
+      "type": "approval",
+      "target": "purchase_order.create",
+      "due_by": "2030-01-01T00:00:00Z",
+      "fulfilled": true,
+      "required": true
+    },
+    {
+      "type": "audit_export",
+      "target": "decision_record",
+      "due_by": "2030-01-01T00:00:00Z",
+      "fulfilled": true,
+      "required": true
+    }
+  ],
+  "evidence_refs": [
+    { "kind": "trace", "ref": "trace://tx-2001" },
+    { "kind": "receipt", "ref": "receipt://decision-record/tx-2001" }
+  ],
+  "status": "fulfilled",
+  "dispute_window_end": "2030-01-08T00:00:00Z",
+  "audit_required": true
+}

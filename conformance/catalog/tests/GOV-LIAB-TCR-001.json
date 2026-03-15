@@ -1,0 +1,49 @@
+{
+  "id": "GOV-LIAB-TCR-001",
+  "title": "Required overdue commitment denies finalize",
+  "primitive": "TCR",
+  "pillar": "liability_accountability",
+  "level": "L3",
+  "input": {
+    "commitment_record": {
+      "commitment_id": "tcr-test-001",
+      "transaction_id": "tx-tcr-001",
+      "issuer": "OrgA.AgentA",
+      "counterparty": "OrgB.ServiceB",
+      "commitments": [
+        {
+          "type": "approval",
+          "target": "purchase_order.create",
+          "due_by": "2030-01-01T00:00:00Z",
+          "fulfilled": true,
+          "required": true
+        },
+        {
+          "type": "audit_export",
+          "target": "decision_bundle",
+          "due_by": "2024-01-01T00:00:00Z",
+          "fulfilled": false,
+          "required": true
+        }
+      ],
+      "evidence_refs": [
+        { "kind": "trace", "ref": "trace://tx-tcr-001" }
+      ],
+      "status": "pending",
+      "dispute_window_end": "2030-01-08T00:00:00Z",
+      "audit_required": true
+    },
+    "transaction": {
+      "transaction_id": "tx-tcr-001",
+      "action": "finalize"
+    }
+  },
+  "expected": {
+    "decision": "deny",
+    "reason_code": "ERR_TCR_REQUIRED_COMMITMENT_UNFULFILLED",
+    "commitment_id": "tcr-test-001",
+    "status": "breached",
+    "required_evidence_fields": ["transaction_id", "commitment_id", "decision", "reason_code", "status", "timestamp", "evidence_ref_count"],
+    "evidence_equals_result_fields": ["transaction_id", "commitment_id", "decision", "reason_code", "status", "evidence_ref_count"]
+  }
+}

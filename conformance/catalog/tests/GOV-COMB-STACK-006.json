@@ -1,0 +1,84 @@
+{
+  "id": "GOV-COMB-STACK-006",
+  "title": "Combined stack aggregates multiple failures",
+  "primitive": "COMBINED",
+  "pillar": "cross_pillar",
+  "level": "L3",
+  "input": {
+    "combined_options": {
+      "mode": "aggregate"
+    },
+    "delegation": {
+      "delegation_id": "dae-combined-006",
+      "principal": "OrgA.AgentA",
+      "delegate": "OrgA.AgentB",
+      "allowed_actions": ["purchase_order.create"],
+      "constraints": { "max_value": 5000, "jurisdiction": "EU" },
+      "expiry": "2030-01-01T00:00:00Z",
+      "revocable": true,
+      "revoked": true,
+      "audit_required": true
+    },
+    "boundary_assertion": {
+      "assertion_id": "dba-combined-006",
+      "issuer": "OrgA.GovernanceService",
+      "subject_id": "req-combined-006",
+      "subject_type": "request",
+      "data_classes": ["customer_content"],
+      "permitted_operations": ["infer"],
+      "boundary_constraints": {
+        "allowed_regions": ["EU"],
+        "max_retention_hours": 24,
+        "redaction_required": ["customer_email"],
+        "egress_allowed": false
+      },
+      "audit_required": true
+    },
+    "commitment_record": {
+      "commitment_id": "tcr-combined-006",
+      "transaction_id": "tx-combined-006",
+      "issuer": "OrgA.AgentA",
+      "counterparty": "OrgB.ServiceB",
+      "commitments": [
+        {
+          "type": "audit_export",
+          "target": "decision_record",
+          "due_by": "2024-01-01T00:00:00Z",
+          "fulfilled": false,
+          "required": true
+        }
+      ],
+      "evidence_refs": [{ "kind": "trace", "ref": "trace://tx-combined-006" }],
+      "status": "pending",
+      "audit_required": true
+    },
+    "transaction": {
+      "transaction_id": "tx-combined-006",
+      "action": "purchase_order.create",
+      "amount": 100,
+      "operation": "infer",
+      "region": "US",
+      "requested_retention_hours": 48,
+      "cross_org_transfer": true,
+      "visible_fields": ["customer_email"]
+    }
+  },
+  "expected": {
+    "decision": "deny",
+    "reason_code": "ERR_COMBINED_MULTI_FAILURE",
+    "evaluation_mode": "aggregate",
+    "evaluation_order": ["DAE", "DBA", "TCR"],
+    "final_phase": "MULTI",
+    "failed_phase": "MULTI",
+    "failed_phases": ["DAE", "DBA", "TCR"],
+    "failure_reason_codes": ["ERR_DAE_REVOKED", "ERR_DBA_EGRESS_BLOCKED", "ERR_TCR_REQUIRED_COMMITMENT_UNFULFILLED"],
+    "dae_decision": "deny",
+    "dae_reason_code": "ERR_DAE_REVOKED",
+    "dba_decision": "deny",
+    "dba_reason_code": "ERR_DBA_EGRESS_BLOCKED",
+    "tcr_decision": "deny",
+    "tcr_reason_code": "ERR_TCR_REQUIRED_COMMITMENT_UNFULFILLED",
+    "required_evidence_fields": ["transaction_id", "delegation_id", "assertion_id", "commitment_id", "decision", "reason_code", "evaluation_mode", "final_phase", "failed_phase", "timestamp"],
+    "evidence_equals_result_fields": ["transaction_id", "delegation_id", "assertion_id", "commitment_id", "decision", "reason_code", "evaluation_mode", "final_phase", "failed_phase"]
+  }
+}

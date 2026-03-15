@@ -1,0 +1,19 @@
+{
+  "id": "GOV-AUTHZ-DAE-005",
+  "title": "Missing delegation denies",
+  "primitive": "DAE",
+  "pillar": "authorization_scope",
+  "level": "L1",
+  "input": {
+    "transaction": {
+      "transaction_id": "tx-005",
+      "action": "purchase_order.create",
+      "amount": 100
+    }
+  },
+  "expected": {
+    "decision": "deny",
+    "reason_code": "ERR_DAE_MISSING",
+    "required_evidence_fields": []
+  }
+}

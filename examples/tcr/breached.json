@@ -1,0 +1,29 @@
+{
+  "commitment_id": "tcr-002",
+  "transaction_id": "tx-2002",
+  "issuer": "OrgA.AgentA",
+  "counterparty": "OrgB.ServiceB",
+  "commitments": [
+    {
+      "type": "approval",
+      "target": "refund.issue",
+      "due_by": "2026-02-27T00:00:00Z",
+      "fulfilled": true,
+      "required": true
+    },
+    {
+      "type": "audit_export",
+      "target": "refund_evidence_bundle",
+      "due_by": "2026-02-27T00:00:00Z",
+      "fulfilled": false,
+      "required": true
+    }
+  ],
+  "evidence_refs": [
+    { "kind": "trace", "ref": "trace://tx-2002" }
+  ],
+  "status": "breached",
+  "breach_reason": "required audit export was not completed before due_by",
+  "dispute_window_end": "2026-03-06T00:00:00Z",
+  "audit_required": true
+}

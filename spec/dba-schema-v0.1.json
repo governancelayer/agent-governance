@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/governancelayer/agent-governance/blob/main/spec/dba-schema-v0.1.json",
+  "title": "Data Boundary Assertion v0.1",
+  "type": "object",
+  "required": [
+    "assertion_id",
+    "issuer",
+    "subject_id",
+    "subject_type",
+    "data_classes",
+    "permitted_operations",
+    "boundary_constraints",
+    "audit_required"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "assertion_id": { "type": "string", "minLength": 1 },
+    "issuer": { "type": "string", "minLength": 1 },
+    "subject_id": { "type": "string", "minLength": 1 },
+    "subject_type": { "type": "string", "minLength": 1 },
+    "data_classes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "permitted_operations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "boundary_constraints": {
+      "type": "object",
+      "required": ["egress_allowed"],
+      "additionalProperties": false,
+      "properties": {
+        "allowed_regions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "max_retention_hours": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "redaction_required": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "egress_allowed": { "type": "boolean" }
+      }
+    },
+    "audit_required": { "type": "boolean" }
+  }
+}

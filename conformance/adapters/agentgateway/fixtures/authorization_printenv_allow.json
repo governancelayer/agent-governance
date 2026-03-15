@@ -1,0 +1,9 @@
+{
+  "id": "authz-printenv-allow",
+  "upstream_example_path": "upstream/agentgateway/examples/authorization",
+  "config_path": "upstream/agentgateway/examples/authorization/config.yaml",
+  "identity_fixture": "example1.key",
+  "tool_name": "printEnv",
+  "expected_decision": "allow",
+  "expected_reason": "Identity satisfies the printEnv authorization rule because jwt.nested.key == value."
+}

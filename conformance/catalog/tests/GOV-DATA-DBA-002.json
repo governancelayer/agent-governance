@@ -1,0 +1,39 @@
+{
+  "id": "GOV-DATA-DBA-002",
+  "title": "Redaction-required field blocks transfer",
+  "primitive": "DBA",
+  "pillar": "data_boundaries",
+  "level": "L2",
+  "input": {
+    "boundary_assertion": {
+      "assertion_id": "dba-test-002",
+      "issuer": "OrgA.GovernanceService",
+      "subject_id": "resp-3002",
+      "subject_type": "response",
+      "data_classes": ["customer_content", "pii"],
+      "permitted_operations": ["forward"],
+      "boundary_constraints": {
+        "allowed_regions": ["EU"],
+        "max_retention_hours": 24,
+        "redaction_required": ["customer_email"],
+        "egress_allowed": true
+      },
+      "audit_required": true
+    },
+    "transaction": {
+      "transaction_id": "tx-dba-002",
+      "operation": "forward",
+      "region": "EU",
+      "requested_retention_hours": 1,
+      "cross_org_transfer": false,
+      "visible_fields": ["customer_email", "order_id"]
+    }
+  },
+  "expected": {
+    "decision": "deny",
+    "reason_code": "ERR_DBA_REDACTION_REQUIRED",
+    "assertion_id": "dba-test-002",
+    "required_evidence_fields": ["transaction_id", "assertion_id", "decision", "reason_code", "timestamp", "evaluated_region", "evaluated_operation"],
+    "evidence_equals_result_fields": ["transaction_id", "assertion_id", "decision", "reason_code", "evaluated_region", "evaluated_operation"]
+  }
+}

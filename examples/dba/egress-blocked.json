@@ -1,0 +1,15 @@
+{
+  "assertion_id": "dba-002",
+  "issuer": "OrgA.GovernanceService",
+  "subject_id": "resp-2002",
+  "subject_type": "response",
+  "data_classes": ["pii", "customer_content"],
+  "permitted_operations": ["store"],
+  "boundary_constraints": {
+    "allowed_regions": ["EU"],
+    "max_retention_hours": 12,
+    "redaction_required": ["customer_email", "account_number"],
+    "egress_allowed": false
+  },
+  "audit_required": true
+}

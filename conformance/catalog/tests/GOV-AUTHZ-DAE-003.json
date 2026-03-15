@@ -1,0 +1,31 @@
+{
+  "id": "GOV-AUTHZ-DAE-003",
+  "title": "Revoked delegation denies with evidence",
+  "primitive": "DAE",
+  "pillar": "authorization_scope",
+  "level": "L2",
+  "input": {
+    "delegation": {
+      "delegation_id": "dae-003",
+      "principal": "OrgA.AgentA",
+      "delegate": "OrgA.AgentB",
+      "allowed_actions": ["purchase_order.create"],
+      "constraints": { "max_value": 10000, "jurisdiction": "EU" },
+      "expiry": "2030-01-01T00:00:00Z",
+      "revocable": true,
+      "revoked": true,
+      "audit_required": true
+    },
+    "transaction": {
+      "transaction_id": "tx-003",
+      "action": "purchase_order.create",
+      "amount": 500
+    }
+  },
+  "expected": {
+    "decision": "deny",
+    "reason_code": "ERR_DAE_REVOKED",
+    "required_evidence_fields": ["transaction_id", "delegation_id", "decision", "reason_code", "timestamp"],
+    "evidence_equals_result_fields": ["transaction_id", "delegation_id", "decision", "reason_code"]
+  }
+}

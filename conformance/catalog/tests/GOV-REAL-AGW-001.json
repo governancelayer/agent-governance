@@ -1,0 +1,18 @@
+{
+  "id": "GOV-REAL-AGW-001",
+  "title": "Agentgateway authorization example denies printEnv without nested claim",
+  "targets": ["agentgateway"],
+  "pillar": "authorization_scope",
+  "level": "L1",
+  "input": {
+    "transaction_id": "agw-real-001",
+    "tool_name": "printEnv"
+  },
+  "expected": {
+    "decision": "deny",
+    "reason_code": "ERR_AGW_TOOL_CALL_DENIED",
+    "scenario_id": "authz-printenv-deny",
+    "required_evidence_fields": ["transaction_id", "scenario_id", "decision", "reason_code", "timestamp", "source"],
+    "evidence_equals_result_fields": ["transaction_id", "scenario_id", "decision", "reason_code"]
+  }
+}

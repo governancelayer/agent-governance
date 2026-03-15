@@ -1,0 +1,39 @@
+{
+  "id": "GOV-DATA-DBA-001",
+  "title": "Cross-org egress blocked by data boundary assertion",
+  "primitive": "DBA",
+  "pillar": "data_boundaries",
+  "level": "L2",
+  "input": {
+    "boundary_assertion": {
+      "assertion_id": "dba-test-001",
+      "issuer": "OrgA.GovernanceService",
+      "subject_id": "req-3001",
+      "subject_type": "request",
+      "data_classes": ["customer_content", "pii"],
+      "permitted_operations": ["audit_export"],
+      "boundary_constraints": {
+        "allowed_regions": ["EU"],
+        "max_retention_hours": 24,
+        "redaction_required": [],
+        "egress_allowed": false
+      },
+      "audit_required": true
+    },
+    "transaction": {
+      "transaction_id": "tx-dba-001",
+      "operation": "audit_export",
+      "region": "EU",
+      "requested_retention_hours": 4,
+      "cross_org_transfer": true,
+      "visible_fields": []
+    }
+  },
+  "expected": {
+    "decision": "deny",
+    "reason_code": "ERR_DBA_EGRESS_BLOCKED",
+    "assertion_id": "dba-test-001",
+    "required_evidence_fields": ["transaction_id", "assertion_id", "decision", "reason_code", "timestamp", "evaluated_region", "evaluated_operation"],
+    "evidence_equals_result_fields": ["transaction_id", "assertion_id", "decision", "reason_code", "evaluated_region", "evaluated_operation"]
+  }
+}

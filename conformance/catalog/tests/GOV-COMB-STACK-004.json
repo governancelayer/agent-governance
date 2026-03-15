@@ -1,0 +1,76 @@
+{
+  "id": "GOV-COMB-STACK-004",
+  "title": "Combined stack allows when all primitives allow",
+  "primitive": "COMBINED",
+  "pillar": "cross_pillar",
+  "level": "L3",
+  "input": {
+    "delegation": {
+      "delegation_id": "dae-combined-004",
+      "principal": "OrgA.AgentA",
+      "delegate": "OrgA.AgentB",
+      "allowed_actions": ["purchase_order.create"],
+      "constraints": { "max_value": 5000, "jurisdiction": "EU" },
+      "expiry": "2030-01-01T00:00:00Z",
+      "revocable": true,
+      "revoked": false,
+      "audit_required": true
+    },
+    "boundary_assertion": {
+      "assertion_id": "dba-combined-004",
+      "issuer": "OrgA.GovernanceService",
+      "subject_id": "req-combined-004",
+      "subject_type": "request",
+      "data_classes": ["customer_content"],
+      "permitted_operations": ["infer"],
+      "boundary_constraints": {
+        "allowed_regions": ["EU"],
+        "max_retention_hours": 24,
+        "redaction_required": [],
+        "egress_allowed": true
+      },
+      "audit_required": true
+    },
+    "commitment_record": {
+      "commitment_id": "tcr-combined-004",
+      "transaction_id": "tx-combined-004",
+      "issuer": "OrgA.AgentA",
+      "counterparty": "OrgB.ServiceB",
+      "commitments": [
+        {
+          "type": "audit_export",
+          "target": "decision_record",
+          "due_by": "2030-01-01T00:00:00Z",
+          "fulfilled": true,
+          "required": true
+        }
+      ],
+      "evidence_refs": [{ "kind": "trace", "ref": "trace://tx-combined-004" }],
+      "status": "fulfilled",
+      "audit_required": true
+    },
+    "transaction": {
+      "transaction_id": "tx-combined-004",
+      "action": "purchase_order.create",
+      "amount": 100,
+      "operation": "infer",
+      "region": "EU",
+      "requested_retention_hours": 1,
+      "cross_org_transfer": false,
+      "visible_fields": []
+    }
+  },
+  "expected": {
+    "decision": "allow",
+    "reason_code": "OK_TCR_FULFILLED",
+    "final_phase": "TCR",
+    "dae_decision": "allow",
+    "dae_reason_code": "OK_DAE_ALLOWED",
+    "dba_decision": "allow",
+    "dba_reason_code": "OK_DBA_ALLOWED",
+    "tcr_decision": "allow",
+    "tcr_reason_code": "OK_TCR_FULFILLED",
+    "required_evidence_fields": ["transaction_id", "delegation_id", "assertion_id", "commitment_id", "decision", "reason_code", "final_phase", "dae_decision", "dba_decision", "tcr_decision", "timestamp"],
+    "evidence_equals_result_fields": ["transaction_id", "delegation_id", "assertion_id", "commitment_id", "decision", "reason_code", "final_phase", "dae_decision", "dba_decision", "tcr_decision"]
+  }
+}

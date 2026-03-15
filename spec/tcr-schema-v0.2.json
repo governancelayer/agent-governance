@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/agf-spec/agent-governance-framework/blob/main/spec/tcr-schema-v0.2.json",
+  "title": "Transaction Commitment Record v0.2",
+  "$comment": "TCR extends the W3C PROV Activity model with a commitment lifecycle. W3C PROV provides vocabulary for activity/agent/entity provenance; it does not define commitment deadlines, lifecycle states, breach detection, or dispute windows. XACML 3.0 Obligations cover synchronous commitment semantics only. TCR's temporal lifecycle + portable dispute-ready evidence container are novel. See docs/standards-alignment.md.",
+  "type": "object",
+  "required": [
+    "commitment_id",
+    "transaction_id",
+    "issuer",
+    "counterparty",
+    "commitments",
+    "evidence_refs",
+    "status",
+    "audit_required"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "commitment_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique identifier for this commitment record."
+    },
+    "transaction_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Links this record to the transaction. Maps to W3C PROV Activity identifier."
+    },
+    "issuer": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The agent responsible for the commitments. Maps to W3C PROV Agent (wasAssociatedWith)."
+    },
+    "counterparty": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The principal on whose behalf the agent acted. Maps to W3C PROV Agent (actedOnBehalfOf)."
+    },
+    "commitments": {
+      "type": "array",
+      "minItems": 1,
+      "description": "The obligations this transaction carries. Conceptually analogous to XACML 3.0 Obligations but persistent, portable, and time-aware. Each commitment has a deadline and a fulfillment state that is tracked over time.",
+      "items": {
+        "type": "object",
+        "required": ["type", "target", "fulfilled", "required"],
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Commitment type. Examples: approval, delivery, redaction, notification, audit_export."
+          },
+          "target": {
+            "type": "string",
+            "minLength": 1,
+            "description": "What the commitment applies to."
+          },
+          "due_by": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Deadline for fulfillment. AGF extension beyond XACML Obligations: if this timestamp passes with fulfilled=false and required=true, the record MUST be treated as breached."
+          },
+          "fulfilled": {
+            "type": "boolean",
+            "description": "Whether this commitment has been fulfilled."
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Whether this commitment is required for the transaction to be considered fulfilled. If required=true and fulfilled=false after due_by, status MUST be breached."
+          }
+        }
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "description": "References to artifacts that support this record. Maps to W3C PROV Entity references (used, wasGeneratedBy). Must be preserved through dispute_window_end.",
+      "items": {
+        "type": "object",
+        "required": ["kind", "ref"],
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Artifact type. Examples: trace, log, receipt, attestation, snapshot."
+          },
+          "ref": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Reference to the artifact (URI, hash, or identifier)."
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "fulfilled", "breached", "revoked"],
+      "description": "Lifecycle state. AGF-specific lifecycle: pending → fulfilled/breached/revoked. A breached or revoked status blocks finalize/close actions. No equivalent lifecycle exists in W3C PROV or XACML."
+    },
+    "breach_reason": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Machine-readable breach cause. Required when status='breached'."
+    },
+    "dispute_window_end": {
+      "type": "string",
+      "format": "date-time",
+      "description": "AGF-specific: evidence_refs MUST be preserved through this timestamp for dispute adjudication. No equivalent concept in W3C PROV or XACML."
+    },
+    "audit_required": {
+      "type": "boolean",
+      "description": "If true, the enforcement point MUST emit audit evidence for this record evaluation."
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/agf-spec/agent-governance-framework/blob/main/spec/dba-schema-v0.2.json",
+  "title": "Data Boundary Assertion v0.2",
+  "$comment": "DBA is architecturally distinct from AuthZEN (OpenID) and OPA/Rego. DBA is a portable pre-signed contract that travels with a transaction; AuthZEN and OPA are runtime APIs/engines requiring live connectivity. See docs/standards-alignment.md for the full comparison.",
+  "type": "object",
+  "required": [
+    "assertion_id",
+    "issuer",
+    "subject_id",
+    "subject_type",
+    "data_classes",
+    "permitted_operations",
+    "boundary_constraints",
+    "audit_required"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "assertion_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique identifier for this data boundary assertion."
+    },
+    "issuer": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identity of the party issuing the data governance terms."
+    },
+    "subject_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identifier of the data artifact being governed. Partial mapping to AuthZEN 'resource' object."
+    },
+    "subject_type": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Type of the data artifact. Examples: request, response, prompt, completion, artifact."
+    },
+    "data_classes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Data sensitivity classifications that apply to this artifact. Examples: pii, financial, confidential, customer_content."
+    },
+    "permitted_operations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Operations permitted on this data artifact. Partial mapping to AuthZEN 'action' type. Machine-enforceable: if the attempted operation is not in this list, the result MUST be deny (ERR_DBA_OPERATION_NOT_ALLOWED). Examples: store, transform, infer, forward, audit_export."
+    },
+    "boundary_constraints": {
+      "type": "object",
+      "required": ["egress_allowed"],
+      "additionalProperties": false,
+      "description": "Data governance constraints for this artifact. These fields encode GDPR, data residency, and data processing agreement obligations in machine-readable form.",
+      "properties": {
+        "allowed_regions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Regions where processing is permitted. ISO 3166-1 alpha-2 codes or named regions (e.g., EU, US-EAST). If set and transaction region is not in this list, result MUST be deny (ERR_DBA_REGION_NOT_ALLOWED)."
+        },
+        "max_retention_hours": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Maximum hours the data may be retained. If the requested retention duration exceeds this, result MUST be deny (ERR_DBA_RETENTION_EXCEEDED)."
+        },
+        "redaction_required": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Field names that must be redacted before the data may leave this boundary. If any of these fields are still present in the transaction's visible_fields, result MUST be deny (ERR_DBA_REDACTION_REQUIRED)."
+        },
+        "egress_allowed": {
+          "type": "boolean",
+          "description": "Whether the data may cross an organizational boundary. If false and cross_org_transfer=true in the transaction, result MUST be deny (ERR_DBA_EGRESS_BLOCKED)."
+        }
+      }
+    },
+    "audit_required": {
+      "type": "boolean",
+      "description": "If true, the enforcement point MUST emit audit evidence for this assertion evaluation."
+    }
+  }
+}

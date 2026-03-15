@@ -1,0 +1,50 @@
+{
+  "id": "GOV-LIAB-TCR-003",
+  "title": "Fulfilled commitments allow close with evidence",
+  "primitive": "TCR",
+  "pillar": "liability_accountability",
+  "level": "L3",
+  "input": {
+    "commitment_record": {
+      "commitment_id": "tcr-test-003",
+      "transaction_id": "tx-tcr-003",
+      "issuer": "OrgA.AgentA",
+      "counterparty": "OrgB.ServiceB",
+      "commitments": [
+        {
+          "type": "approval",
+          "target": "refund.issue",
+          "due_by": "2030-01-01T00:00:00Z",
+          "fulfilled": true,
+          "required": true
+        },
+        {
+          "type": "audit_export",
+          "target": "refund_evidence_bundle",
+          "due_by": "2030-01-01T00:00:00Z",
+          "fulfilled": true,
+          "required": true
+        }
+      ],
+      "evidence_refs": [
+        { "kind": "trace", "ref": "trace://tx-tcr-003" },
+        { "kind": "receipt", "ref": "receipt://tx-tcr-003" }
+      ],
+      "status": "fulfilled",
+      "dispute_window_end": "2030-01-08T00:00:00Z",
+      "audit_required": true
+    },
+    "transaction": {
+      "transaction_id": "tx-tcr-003",
+      "action": "close"
+    }
+  },
+  "expected": {
+    "decision": "allow",
+    "reason_code": "OK_TCR_FULFILLED",
+    "commitment_id": "tcr-test-003",
+    "status": "fulfilled",
+    "required_evidence_fields": ["transaction_id", "commitment_id", "decision", "reason_code", "status", "timestamp", "evidence_ref_count"],
+    "evidence_equals_result_fields": ["transaction_id", "commitment_id", "decision", "reason_code", "status", "evidence_ref_count"]
+  }
+}

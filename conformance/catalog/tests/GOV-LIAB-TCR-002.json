@@ -1,0 +1,41 @@
+{
+  "id": "GOV-LIAB-TCR-002",
+  "title": "Revoked commitment record denies transaction close",
+  "primitive": "TCR",
+  "pillar": "liability_accountability",
+  "level": "L3",
+  "input": {
+    "commitment_record": {
+      "commitment_id": "tcr-test-002",
+      "transaction_id": "tx-tcr-002",
+      "issuer": "OrgA.AgentA",
+      "counterparty": "OrgB.ServiceB",
+      "commitments": [
+        {
+          "type": "approval",
+          "target": "refund.issue",
+          "due_by": "2030-01-01T00:00:00Z",
+          "fulfilled": true,
+          "required": true
+        }
+      ],
+      "evidence_refs": [
+        { "kind": "trace", "ref": "trace://tx-tcr-002" }
+      ],
+      "status": "revoked",
+      "audit_required": true
+    },
+    "transaction": {
+      "transaction_id": "tx-tcr-002",
+      "action": "close"
+    }
+  },
+  "expected": {
+    "decision": "deny",
+    "reason_code": "ERR_TCR_REVOKED",
+    "commitment_id": "tcr-test-002",
+    "status": "revoked",
+    "required_evidence_fields": ["transaction_id", "commitment_id", "decision", "reason_code", "status", "timestamp", "evidence_ref_count"],
+    "evidence_equals_result_fields": ["transaction_id", "commitment_id", "decision", "reason_code", "status", "evidence_ref_count"]
+  }
+}

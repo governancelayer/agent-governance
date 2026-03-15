@@ -1,0 +1,15 @@
+{
+  "delegation_id": "dae-expired-001",
+  "principal": "OrgA.AgentA",
+  "delegate": "OrgA.AgentB",
+  "allowed_actions": ["purchase_order.create"],
+  "constraints": {
+    "max_value": 10000,
+    "currency": "EUR",
+    "jurisdiction": "EU"
+  },
+  "expiry": "2024-01-01T00:00:00Z",
+  "revocable": true,
+  "revoked": false,
+  "audit_required": true
+}

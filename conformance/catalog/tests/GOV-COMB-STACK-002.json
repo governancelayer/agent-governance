@@ -1,0 +1,77 @@
+{
+  "id": "GOV-COMB-STACK-002",
+  "title": "Combined stack stops at DBA denial after DAE allow",
+  "primitive": "COMBINED",
+  "pillar": "cross_pillar",
+  "level": "L3",
+  "input": {
+    "delegation": {
+      "delegation_id": "dae-combined-002",
+      "principal": "OrgA.AgentA",
+      "delegate": "OrgA.AgentB",
+      "allowed_actions": ["purchase_order.create"],
+      "constraints": { "max_value": 5000, "jurisdiction": "EU" },
+      "expiry": "2030-01-01T00:00:00Z",
+      "revocable": true,
+      "revoked": false,
+      "audit_required": true
+    },
+    "boundary_assertion": {
+      "assertion_id": "dba-combined-002",
+      "issuer": "OrgA.GovernanceService",
+      "subject_id": "req-combined-002",
+      "subject_type": "request",
+      "data_classes": ["customer_content"],
+      "permitted_operations": ["infer"],
+      "boundary_constraints": {
+        "allowed_regions": ["EU"],
+        "max_retention_hours": 24,
+        "redaction_required": [],
+        "egress_allowed": false
+      },
+      "audit_required": true
+    },
+    "commitment_record": {
+      "commitment_id": "tcr-combined-002",
+      "transaction_id": "tx-combined-002",
+      "issuer": "OrgA.AgentA",
+      "counterparty": "OrgB.ServiceB",
+      "commitments": [
+        {
+          "type": "audit_export",
+          "target": "decision_record",
+          "due_by": "2030-01-01T00:00:00Z",
+          "fulfilled": true,
+          "required": true
+        }
+      ],
+      "evidence_refs": [{ "kind": "trace", "ref": "trace://tx-combined-002" }],
+      "status": "fulfilled",
+      "audit_required": true
+    },
+    "transaction": {
+      "transaction_id": "tx-combined-002",
+      "action": "purchase_order.create",
+      "amount": 100,
+      "operation": "infer",
+      "region": "EU",
+      "requested_retention_hours": 1,
+      "cross_org_transfer": true,
+      "visible_fields": []
+    }
+  },
+  "expected": {
+    "decision": "deny",
+    "reason_code": "ERR_DBA_EGRESS_BLOCKED",
+    "final_phase": "DBA",
+    "failed_phase": "DBA",
+    "dae_decision": "allow",
+    "dae_reason_code": "OK_DAE_ALLOWED",
+    "dba_decision": "deny",
+    "dba_reason_code": "ERR_DBA_EGRESS_BLOCKED",
+    "tcr_decision": "not_run",
+    "tcr_reason_code": "NOT_RUN",
+    "required_evidence_fields": ["transaction_id", "delegation_id", "assertion_id", "commitment_id", "decision", "reason_code", "final_phase", "failed_phase", "dae_decision", "dba_decision", "tcr_decision", "timestamp"],
+    "evidence_equals_result_fields": ["transaction_id", "delegation_id", "assertion_id", "commitment_id", "decision", "reason_code", "final_phase", "failed_phase", "dae_decision", "dba_decision", "tcr_decision"]
+  }
+}
